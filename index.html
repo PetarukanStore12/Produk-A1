@@ -1,0 +1,613 @@
+<!DOCTYPE Teks Berjalan Baru.html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petarukan Store || Digital Online</title>
+<style>
+/* --- PERBAIKAN ANTI-PERGESERAN LAYAR (FINAL) --- */
+html {
+    /* FIX: Memastikan ruang scrollbar vertikal selalu dicadangkan */
+    overflow-y: scroll; 
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #F4F4F4;
+  margin: 0;
+  padding: 0;
+}
+body.modal-open { overflow: hidden; } 
+
+/* --- PERBAIKAN HEADER TETAP (FIXED) --- */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100; /* Pastikan header selalu di atas konten dan modal */
+  background: white;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  box-sizing: border-box; /* Penting untuk menjaga lebar tetap 100% */
+}
+
+/* Penahan (Spacer) agar Konten Produk tidak tertutup Header Fixed */
+.content-spacer {
+    /* Tinggi ini harus disesuaikan dengan tinggi total header Anda */
+    margin-top: 170px; 
+}
+/* Akhir Perbaikan Header Tetap */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px; 
+}
+.logo { width: 48px; height: 48px; border-radius: 5px; overflow: hidden; }
+.logo img { width: 100%; height: 100%; object-fit: cover; }
+.store-info { display: flex; flex-direction: column; }
+.store-name { font-size: 20px; font-weight: bold; }
+.store-sub { font-size: 12px; color: #555; }
+.search-box {
+  width: 90%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 5px; 
+}
+
+/* --- TEKS BERJALAN/PENGUMUMAN (MENARIK) --- */
+.welcome-text {
+  /* Perubahan visual utama */
+  background: linear-gradient(90deg, #0044FF, #001A9A); /* Gradien Biru */
+  box-shadow: 0 4px 8px rgba(0, 53, 255, 0.4); /* Shadow awal */
+  border-radius: 6px; /* Sudut sedikit melengkung */
+
+  font-weight: bold;
+  font-size: 14px; 
+  color: #fff;
+  height: 30px; 
+  display: flex; 
+  align-items: center; 
+  margin: 4px auto 8px auto; 
+  border: none;
+  width: 100%;
+  overflow: hidden; 
+  padding: 0 5px 0 10px; 
+  box-sizing: border-box;
+  animation: pulseShadow 2s infinite alternate; /* Animasi Glow Berkedip */
+}
+
+/* Keyframes untuk efek shadow berkedip */
+@keyframes pulseShadow {
+    0% { box-shadow: 0 4px 8px rgba(0, 53, 255, 0.4); }
+    100% { box-shadow: 0 4px 12px rgba(255, 255, 255, 0.7); } /* Efek glow putih halus */
+}
+
+/* STYLE IKON */
+.announcement-icon {
+    font-size: 18px; 
+    margin-right: 8px; 
+    flex-shrink: 0; 
+    /* Efek cahaya pada ikon */
+    text-shadow: 0 0 5px #FFFF00, 0 0 10px #FFD700; 
+}
+
+/* Container untuk teks yang akan berjalan */
+.marquee-container {
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.marquee-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scrolling 12s linear infinite; 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); 
+}
+@keyframes scrolling {
+    0% { transform: translateX(0%); } 
+    100% { transform: translateX(-100%); }
+}
+
+/* --- TANGGAL DAN JAM --- */
+.datetime-container {
+    background: none; 
+    text-align: center;
+    padding: 0 0 3px 0; 
+    font-size: 11px;
+    color: #555;
+    font-weight: normal;
+}
+
+/* --- ADMIN INFO ALERT FIXED KANAN ATAS --- */
+
+/* Container untuk Notifikasi (Fixed Top-Right) */
+.floating-buttons-wrapper {
+    position: fixed;
+    top: 15px; /* Jarak dari atas */
+    right: 15px; /* Jarak dari kanan */
+    z-index: 1000; /* Pastikan paling atas */
+}
+
+/* 1. Ikon Lonceng (Wrapper & Icon Style) */
+.notification-wrapper {
+    position: relative; /* Penting untuk alert-popup */
+    display: flex; /* Memastikan ikon lonceng tampil */
+}
+
+.floating-alert-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #1e88e5; /* Main Blue */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    position: relative; /* <<< PENTING UNTUK BADGE */
+}
+.floating-alert-icon:hover {
+    background-color: #0d47a1; /* Darker Blue on hover */
+}
+/* IKON LONCENG NORMAL (tidak berkedip) */
+.floating-alert-icon .alert-icon {
+    font-size: 20px;
+    color: white; 
+}
+
+/* BADGE NOTIFIKASI BARU (LINGKARAN MERAH) */
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #d32f2f; /* Red */
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 50%;
+    min-width: 10px; /* Lebar minimum untuk angka 1 digit */
+    height: 10px;
+    text-align: center;
+    line-height: 10px;
+    border: 1px solid white; /* Border putih tipis agar terlihat jelas */
+    /* Awalnya disembunyikan / ditampilkan oleh JS */
+    display: none; 
+}
+
+
+/* 2. Popup Konten Notifikasi */
+.alert-popup {
+    display: none; /* Awalnya disembunyikan oleh CSS */
+    position: absolute;
+    top: 50px; /* Di bawah ikon */
+    right: 0; /* Menempel ke kanan dari notification-wrapper */
+    width: 250px;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #1e88e5;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+.alert-popup.show {
+    display: flex; /* Ditampilkan oleh JS */
+    opacity: 1;
+    transform: translateY(0);
+}
+.popup-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #d32f2f; /* Merah untuk penekanan */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+.popup-message {
+    font-size: 13px;
+    color: #333;
+}
+.alert-close {
+    background: #e3f2fd;
+    border: 1px solid #1e88e5;
+    color: #1e88e5;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* --- AKHIR ADMIN INFO ALERT FIXED --- */
+
+
+/* GRID PRODUK */
+.produk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+.card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: relative;
+}
+.card img { width: 100%; height: 140px; object-fit: cover; }
+.stok-label {
+  position: absolute;
+  top: 8px; left: 8px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  color: white;
+}
+.stok-habis { background: #e53935; }
+.stok-ready { background: #43a047; }
+.card-content { padding: 8px; }
+.card-content h3 { font-size: 14px; margin: 0; }
+.card-content p  { font-size: 11px; color: #666; margin: 4px 0; }
+.card-buttons {
+  display: flex; justify-content: space-between; padding: 8px; gap: 5px;
+}
+.btn {
+  flex: 1;
+  padding: 6px 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.btn-detail { background: #1508DA; color: #F7F7F7; }
+.btn-order  { background: #d32f2f; color: white; }
+
+/* Tombol nonaktif (abu-abu kalau stok 0) */
+.btn-order[disabled] {
+  background: #bdbdbd !important;
+  color: #f0f0f0 !important;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* MODAL DETAIL PRODUK */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  z-index: 1001; 
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.modal.show { opacity: 1; }
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  max-width: 340px;
+  width: 100%;
+  position: relative;
+  text-align: left;
+  overflow-y: auto;
+  max-height: 80vh;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transform: scale(0.9);
+  transition: transform .25s ease;
+}
+.modal.show .modal-content { transform: scale(1); }
+.modal-content img {
+  display: block;
+  width: 110px; height: 110px; object-fit: cover;
+  border-radius: 8px; margin: 0 auto 8px;
+}
+.modal-content h3 { text-align: center; font-size: 16px; margin: 5px 0 10px; }
+.modal-content p, .modal-content ul { font-size: 12.5px; line-height: 1.4; margin: 4px 0; }
+.modal-content ul { padding-left: 18px; }
+.close-btn {
+  position: absolute; top: 6px; right: 6px; background: #ccc; border: none;
+  border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 14px;
+}
+.harga { font-weight: bold; text-align: center; font-size: 14px; color: #111; margin-top: 10px; }
+
+/* TITLE KATEGORI */
+.kategori-title {
+  width: 70%;
+  grid-column: span 2;
+  text-align: center;
+  background: #0035FF;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin: 10px auto;
+  font-size: 13px;
+}
+
+/* Responsif */
+@media (max-width: 450px) {
+  .modal-content { max-width: 92%; padding: 12px; max-height: 75vh; }
+  .modal-content h3 { font-size: 15px; }
+  .modal-content p, .modal-content ul { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="floating-buttons-wrapper" id="floatingButtonsWrapper">
+    <div class="notification-wrapper" id="notificationWrapper">
+        <div class="floating-alert-icon" id="floatingIcon">
+            <span class="alert-icon">🔔</span>
+            <span class="notification-badge" id="notificationBadge"></span> 
+        </div>
+        
+        <div class="alert-popup" id="alertPopup">
+            <span class="popup-title">PEMBERITAHUAN BARU DARI ADMIN</span> 
+            
+            <span class="popup-message">
+                Semua layanan XL/Axis Akrab L dan XXL sudah **READY STOK** kembali! Silakan cek ketersediaan produk di bawah.
+                <br><br>
+                **Penting:** Jika mengalami kesulitan, silakan hubungi CS melalui WhatsApp.
+            </span>
+            <button class="alert-close" onclick="dismissAlert()">Tutup Pop-up Ini</button>
+        </div>
+        </div>
+</div>
+<div class="header">
+  <div class="brand">
+    <div class="logo"><img src="https://via.placeholder.com/48x48?text=LOGO" alt="Logo"></div> 
+    <div class="store-info">
+      <div class="store-name">PETARUKAN STORE</div>
+      <div class="store-sub">Jl. Raya Petarukan Pemalang</div>
+    </div>
+  </div>
+  
+  <input type="text" id="searchBox" class="search-box" placeholder="Cari produk (nama atau kategori)...">
+  
+  <div class="welcome-text">
+    <span class="announcement-icon">📢</span> 
+    <div class="marquee-container">
+        <p class="marquee-content">⚠️ PROMO TERBATAS! Kuota Akrab XL/Axis Harga Termurah SE-Jawa. Cek Sekarang Sebelum Kehabisan! 🚀</p>
+    </div>
+  </div>
+  
+  <div class="datetime-container" id="currentDateTime"></div>
+  
+</div>
+
+<div class="content-spacer">
+    <div class="produk-grid" id="produkGrid"></div>
+</div>
+
+<div class="modal" id="detailModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="tutupModal()">×</button>
+    <img id="modalImg" src="" alt="">
+    <h3 id="modalNama"></h3>
+    <div id="modalIsi"></div>
+    <p class="harga" id="modalHarga"></p>
+  </div>
+</div>
+
+<script>
+// !!! KUNCI UTAMA: GANTI DENGAN URL WEB APP ANDA !!!
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3l0K02hGiH00Nc-Xo1DFa96GbJNHxnx2m-kfVG_zpQ_uP428RKLiyXeeP4eUIzzIe/exec'; 
+
+// Variabel global
+let produkList = []; 
+const produkGrid = document.getElementById("produkGrid");
+// Variabel Notifikasi (Sudah ada di HTML Anda)
+const floatingIcon = document.getElementById('floatingIcon'); 
+const alertPopup = document.getElementById('alertPopup');
+const notificationBadge = document.getElementById('notificationBadge'); 
+
+
+// --- FUNGSI UTAMA FETCH DARI API GAS ---
+async function fetchDataFromAPI(action) {
+    const url = `${GAS_WEB_APP_URL}?action=${action}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error(`Gagal HTTP! status: ${response.status}`);
+            return null; 
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`[FETCH ERROR] Gagal mengambil data ${action} dari GAS API:`, error);
+        return null;
+    }
+}
+
+
+// --- FUNGSI LOADING DATA PRODUK (Di-poll setiap 30 detik) ---
+async function loadAndRenderProducts() {
+    const data = await fetchDataFromAPI('products');
+    
+    if (data && Array.isArray(data)) {
+        if (JSON.stringify(produkList) !== JSON.stringify(data)) {
+             // Mapping nama properti dari Spreadsheet ke objek produk
+             produkList = data.map(p => ({
+                 nama: p.nama_produk,
+                 kategori: p.kategori,
+                 harga: p.harga,
+                 stok: p.stok,
+                 detail: p.detail,
+                 gambar: p.gambar_produk
+             }));
+             renderProduk(produkList);
+             console.log("Produk diperbarui dari Spreadsheet.");
+        }
+    } else {
+        produkGrid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: red; margin-top: 50px;">GAGAL mengambil data produk dari Spreadsheet. Cek URL Web App Anda.</p>';
+    }
+}
+
+
+// --- FUNGSI PEMBERITAHUAN ADMIN (Di-poll setiap 5 detik) ---
+async function fetchNotificationData() {
+    const data = await fetchDataFromAPI('notifications');
+    
+    if (data && data.message_body) {
+        if(document.getElementById('popupTitle')) document.getElementById('popupTitle').textContent = data.message_title || "PEMBERITAHUAN ADMIN";
+        if(document.getElementById('popupMessage')) document.getElementById('popupMessage').innerHTML = data.message_body.replace(/\n/g, '<br>'); 
+        
+        const unreadCount = data.unread_count || 0;
+
+        if (notificationBadge) {
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount;
+                notificationBadge.style.display = 'flex';
+                if (alertPopup && !alertPopup.classList.contains('show')) {
+                    alertPopup.classList.add('show');
+                }
+            } else {
+                notificationBadge.style.display = 'none';
+            }
+        }
+    }
+}
+
+function toggleAlertPopup() {
+    if (alertPopup) alertPopup.classList.toggle('show');
+    if (notificationBadge && alertPopup && alertPopup.classList.contains('show')) {
+        notificationBadge.style.display = 'none';
+    }
+}
+
+function dismissAlert() {
+    if (alertPopup) alertPopup.classList.remove('show');
+    if (notificationBadge) notificationBadge.style.display = 'none';
+}
+if (floatingIcon) floatingIcon.addEventListener('click', toggleAlertPopup);
+
+
+// --- POLING (NEAR REAL-TIME) MULAI DI SINI ---
+document.addEventListener('DOMContentLoaded', async () => {
+    
+    await loadAndRenderProducts(); 
+    await fetchNotificationData();
+
+    // Cek data produk setiap 30 detik
+    setInterval(loadAndRenderProducts, 30000);
+    
+    // Cek notifikasi setiap 5 detik
+    setInterval(fetchNotificationData, 5000); 
+
+    // Update waktu setiap detik
+    updateDateTime();
+    setInterval(updateDateTime, 1000); 
+});
+// --- AKHIR POLING ---
+
+
+// --- FUNGSI UTILITY (Render, Filter, Modal, WA) ---
+
+function updateDateTime() {
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const dateTimeString = now.toLocaleDateString('id-ID', options);
+    document.getElementById('currentDateTime').textContent = dateTimeString + ' WIB';
+}
+
+function renderProduk(list) {
+  produkGrid.innerHTML = "";
+  if (list.length === 0) {
+      produkGrid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #555; margin-top: 20px;">Produk tidak ditemukan.</p>';
+      return;
+  }
+  
+  const kategoriList = [...new Set(list.map(p => p.kategori))];
+
+  kategoriList.forEach(kat => {
+    const produkInKategori = list.filter(p => p.kategori === kat);
+    if (produkInKategori.length > 0) {
+        const title = document.createElement("div");
+        title.className = "kategori-title";
+        title.textContent = `PRODUK ${kat}`;
+        produkGrid.appendChild(title);
+
+        produkInKategori.forEach(p => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <span class="stok-label ${p.stok > 0 ? 'stok-ready' : 'stok-habis'}">
+              ${p.stok > 0 ? 'STATUS: READY' : 'STATUS: HABIS'}
+            </span>
+            <img src="${p.gambar}" alt="${p.nama}">
+            <div class="card-content">
+              <h3>${p.nama}</h3>
+              <p>Paket data ${p.nama} untuk XL & Axis</p>
+            </div>
+            <div class="card-buttons">
+              <button class="btn btn-detail">DETAIL</button>
+              <button class="btn btn-order" ${p.stok <= 0 ? 'disabled' : ''}>KLIK ORDER</button>
+            </div>
+          `;
+          card.querySelector(".btn-detail").addEventListener("click", () => bukaModal(p));
+          if (p.stok > 0) {
+            card.querySelector(".btn-order").addEventListener("click", () => kirimWA(p));
+          }
+          produkGrid.appendChild(card);
+        });
+    }
+  });
+}
+
+function filterProduk() {
+    const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+    if (searchTerm === "") {
+        renderProduk(produkList); 
+        return;
+    }
+    const filteredList = produkList.filter(p => 
+        p.nama.toLowerCase().includes(searchTerm) || 
+        p.kategori.toLowerCase().includes(searchTerm) 
+    );
+    renderProduk(filteredList);
+}
+document.getElementById('searchBox').addEventListener('keyup', filterProduk);
+
+function bukaModal(p) {
+  document.getElementById("modalImg").src = p.gambar;
+  document.getElementById("modalNama").textContent = p.nama;
+  document.getElementById("modalIsi").innerHTML = p.detail; 
+  document.getElementById("modalHarga").textContent = `Harga: Rp ${p.harga.toLocaleString('id-ID')}`;
+  const modal = document.getElementById("detailModal");
+  modal.style.display = "flex";
+  document.body.classList.add("modal-open");
+  setTimeout(() => modal.classList.add("show"), 10);
+}
+
+function tutupModal() {
+  const modal = document.getElementById("detailModal");
+  modal.classList.remove("show");
+  setTimeout(() => {
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+  }, 200);
+}
+
+function kirimWA(p) {
+  const nomor = "6285643838017";
+  const pesan = `Halo Kak, Saya mau Order produk ini - Apakah Ready?\n${p.nama}\nHarga: Rp ${p.harga.toLocaleString('id-ID')}`;
+  window.open(`https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`, "_blank");
+}
+</script>
+</body>
+</html>
